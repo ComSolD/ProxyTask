@@ -11,66 +11,72 @@ class ProxyParsing():
         self.driver = webdriver.Chrome(service = self.service, options=options)
 
     def parser(self):
-        self.driver.get("https://px6.me/")
+        try:
+            self.driver.get("https://px6.me/")
 
-        login_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-role="login"]'))
-        )
-        login_button.click()
+            login_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-role="login"]'))
+            )
+            login_button.click()
 
-        email_input = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "email"))
-        )
-        password_input = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, "login-password"))
-        )
-
-
-        email_input.send_keys("tzpythondemo@domconnect.ru")
-        password_input.send_keys("kR092IEz")
+            email_input = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.NAME, "email"))
+            )
+            password_input = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "login-password"))
+            )
 
 
-        iframe = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "iframe"))
-        )
-        self.driver.switch_to.frame(iframe)
-
-        checkbox = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border"))
-        )
-
-        checkbox.click()
+            email_input.send_keys("tzpythondemo@domconnect.ru")
+            password_input.send_keys("kR092IEz")
 
 
-        WebDriverWait(self.driver, 300).until(
-            lambda d: d.find_element(By.ID, "recaptcha-anchor").get_attribute("aria-checked") == "true"
-        )
+            iframe = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "iframe"))
+            )
+            self.driver.switch_to.frame(iframe)
+
+            checkbox = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border"))
+            )
+
+            checkbox.click()
 
 
-        self.driver.switch_to.default_content()
+            WebDriverWait(self.driver, 300).until(
+                lambda d: d.find_element(By.ID, "recaptcha-anchor").get_attribute("aria-checked") == "true"
+            )
 
 
-        button = self.driver.find_element(By.XPATH, "//div[@class='form']//button[@class='btn btn-block btn-primary']")
-        button.click()
-
-            
-        ip_elements = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//div[@class='right clickselect ']/b"))
-        )
-
-        date_elements = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//li[@class='mobile-show']/div[@class='right']"))
-        )
+            self.driver.switch_to.default_content()
 
 
-        ips = [element.text for element in ip_elements]
-        dates = [
-            [line.strip() for line in element.get_attribute("textContent").split("\n") if line.strip()] for element in date_elements
-        ]
+            button = self.driver.find_element(By.XPATH, "//div[@class='form']//button[@class='btn btn-block btn-primary']")
+            button.click()
+
+                
+            ip_elements = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//div[@class='right clickselect ']/b"))
+            )
+
+            date_elements = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//li[@class='mobile-show']/div[@class='right']"))
+            )
 
 
-        for ip, date in zip(ips, dates):
-            print(f"{ip} - {date[-1]}")
+            ips = [element.text for element in ip_elements]
+            dates = [
+                [line.strip() for line in element.get_attribute("textContent").split("\n") if line.strip()] for element in date_elements
+            ]
+
+
+            for ip, date in zip(ips, dates):
+                print(f"{ip} - {date[-1]}")
+
+        except Exception as e:
+            print(f"Ошибка: {e}")
+        finally:
+            self.driver.quit()
 
 
 
